@@ -65,6 +65,7 @@ class RestServer {
 	public $mimeDefault;
 
 	protected $mime = null;   // special parameter for mime type of posted data
+	protected $defaultFormat = RestFormat::PLAIN;
 	protected $data = null;   // special parameter for post data
 	protected $query = null;  // special parameter for query string
 	protected $map = array();
@@ -75,8 +76,10 @@ class RestServer {
 	 * The constructor.
 	 *
 	 * @param string $mode The mode, either debug or production
+	 * @param string $defaultFormat
 	 */
-	public function  __construct($mode = 'debug') {
+	public function  __construct($mode = 'debug', $defaultFormat = RestFormat::PLAIN) {
+		$this->defaultFormat = $defaultFormat;
 		$this->mode = $mode;
 
 		// Set the root
@@ -188,6 +191,17 @@ class RestServer {
 
 	public function setJsonAssoc($value) {
 		$this->jsonAssoc = ($value === true);
+	}
+
+	/**
+	 * @param string $defaultFormat
+	 *
+	 * @return RestServer
+	 */
+	public function setDefaultFormat( $defaultFormat ) {
+		$this->defaultFormat = $defaultFormat;
+
+		return $this;
 	}
 
 	public function addClass($class, $basePath = '') {
@@ -476,7 +490,7 @@ class RestServer {
 	}
 
 	public function getFormat() {
-		$format = RestFormat::PLAIN;
+		$format = $this->defaultFormat;
 		$accept_mod = null;
 
 		if (isset($_SERVER["HTTP_ACCEPT"])) {
